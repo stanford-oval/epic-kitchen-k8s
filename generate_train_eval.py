@@ -10,7 +10,8 @@ from kubernetes.client.models import (
     V1VolumeMount,
     V1Volume,
     V1PersistentVolumeClaimVolumeSource,
-    V1SecretVolumeSource
+    V1SecretVolumeSource,
+    V1EmptyDirVolumeSource
 )
 from kubernetes import client as k8s_client
 
