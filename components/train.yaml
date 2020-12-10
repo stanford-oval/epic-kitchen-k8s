@@ -52,7 +52,6 @@ implementation:
       --project, {inputValue: project},
       --experiment, {inputValue: experiment},
       --model, {inputValue: model},
-      --s3_datadir, {inputValue: s3_datadir},
       --s3_model_dir, {outputPath: s3_model_dir},
       --,
       {inputValue: additional_args}, 
