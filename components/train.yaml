@@ -18,7 +18,7 @@ implementation:
     - -e
     - -c
     - |
-      ./lib.sh
+      . ./lib.sh
 
       parse_args "$0" "owner project experiment model git_rev s3_model_dir" "$@"
       shift $n
@@ -28,7 +28,7 @@ implementation:
 
       ./download-pretrained.sh
 
-      MODEL_VERSION = ${git_rev}
+      export MODEL_VERSION=${git_rev}
 
       ./sync-repo.sh
 
