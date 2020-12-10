@@ -66,7 +66,7 @@ def train_eval_epic(
         .add_volume(V1Volume(name='data',
             persistent_volume_claim=V1PersistentVolumeClaimVolumeSource('dataset-epic-kitchen')))
         # .add_volume(V1Volume(name='shm', host_path=V1HostPathVolumeSource(path='/dev/shm')))
-        .add_volume(V1Volume(name='shm', host_path=client.V1EmptyDirVolumeSource(medium='Memory')))
+        .add_volume(V1Volume(name='shm', empty_dir=V1EmptyDirVolumeSource(medium='Memory')))
         )
 
     # eval_env = {}
