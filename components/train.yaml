@@ -44,7 +44,7 @@ implementation:
       
       cd epic-kitchen-lstm
       
-      git clone https://github.com/epic-kitchens/epic-kitchens-100-annotations.git /data/epic-kitchens-100-annotations
+      # git clone https://github.com/epic-kitchens/epic-kitchens-100-annotations.git /data/epic-kitchens-100-annotations
       
       find /data/epic-kitchens-100-annotations
 
