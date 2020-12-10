@@ -37,10 +37,11 @@ implementation:
       chmod +x ./sync-repo.sh
       ./sync-repo.sh
       
-      git clone https://github.com/facebookresearch/detectron2 detectron2_repo
+      git clone https://github.com/facebookresearch/detectron2 /detectron2_repo
+      
+      pip3 install -e /detectron2_repo
       
       cd epic-kitchen-lstm
-      pip3 install -e detectron2_repo
 
       PYTHONPATH=./ python3 tools/run_net.py \
         --cfg configs/EPIC-KITCHENS/SLOWFAST_LSTM_8x8_R50.yaml \
