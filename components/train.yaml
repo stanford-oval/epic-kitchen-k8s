@@ -54,6 +54,7 @@ implementation:
       --project, {inputValue: project},
       --experiment, {inputValue: experiment},
       --model, {inputValue: model},
+      --git_rev, {inputValue: git_rev}
       --s3_model_dir, {outputPath: s3_model_dir},
       --,
       {inputValue: additional_args}, 
