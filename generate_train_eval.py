@@ -56,6 +56,7 @@ def train_eval_epic(
         .set_gpu_limit(str(train_num_gpus))
         .add_volume_mount(V1VolumeMount(name='tensorboard', mount_path='/shared/tensorboard'))
         .add_volume_mount(V1VolumeMount(name='data', mount_path='/data/'))
+        .add_volume_mount(V1VolumeMount(name='shm', mount_path='/dev/shm'))
     )
     (add_env(add_ssh_volume(train_op), train_env)
         .add_toleration(V1Toleration(key='nvidia.com/gpu', operator='Exists', effect='NoSchedule'))
@@ -64,6 +65,8 @@ def train_eval_epic(
             persistent_volume_claim=V1PersistentVolumeClaimVolumeSource('tensorboard-research-kf')))
         .add_volume(V1Volume(name='data',
             persistent_volume_claim=V1PersistentVolumeClaimVolumeSource('dataset-epic-kitchen')))
+        # .add_volume(V1Volume(name='shm', host_path=V1HostPathVolumeSource(path='/dev/shm')))
+        .add_volume(V1Volume(name='shm', host_path=client.V1EmptyDirVolumeSource(medium='Memory')))
         )
 
     # eval_env = {}
