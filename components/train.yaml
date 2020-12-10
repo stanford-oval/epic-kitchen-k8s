@@ -1,0 +1,60 @@
+name: Train
+description: |
+  Train a TRADE model
+inputs:
+  - {name: owner, description: ''}
+  - {name: project, description: ''}
+  - {name: experiment, description: ''}
+  - {name: model, description: ''}
+  - {name: git_rev, description: ''}
+  - {name: additional_args, description: ''}
+outputs:
+  - {name: s3_model_dir}
+implementation:
+  container:
+    image: '932360549041.dkr.ecr.us-west-2.amazonaws.com/genie-toolkit-jupyter:epic-kitchen-train.20201209.02'
+    command:
+    - /bin/bash
+    - -e
+    - -c
+    - |
+      . k8s/lib.sh
+
+      parse_args "$0" "owner project experiment model git_rev s3_model_dir" "$@"
+      shift $n
+      set -x
+
+      ./download-dataset.sh
+
+      ./download-pretrained.sh
+
+      MODEL_VERSION = ${git_rev}
+
+      ./sync-repo.sh
+
+      PYTHONPATH=./ python3 tools/run_net.py \
+        --cfg configs/EPIC-KITCHENS/SLOWFAST_LSTM_8x8_R50.yaml \
+        NUM_GPUS 1 \
+        OUTPUT_DIR ./save \
+        EPICKITCHENS.VISUAL_DATA_DIR /data/epic-kitchen-all \
+        EPICKITCHENS.ANNOTATIONS_DIR /data/epic-kitchens-100-annotations \
+        EPICKITCHENS.TB_DIR /shared/tensorboard/${project}/${experiment}/${owner}/${model}
+
+      S3_MODEL_DIR=s3://geniehai/${owner}/models/${project}/${experiment}/${model}/`date +%s`/
+      aws s3 sync --no-progress save/ ${S3_MODEL_DIR}
+            
+      mkdir -p `dirname $s3_model_dir`
+      echo ${S3_MODEL_DIR} > $s3_model_dir
+    
+    args: [
+      'cmd',
+      --owner, {inputValue: owner},
+      --project, {inputValue: project},
+      --experiment, {inputValue: experiment},
+      --model, {inputValue: model},
+      --s3_datadir, {inputValue: s3_datadir},
+      --s3_model_dir, {outputPath: s3_model_dir},
+      --,
+      {inputValue: additional_args}, 
+    ]
+# --tensorboard_dir /shared/tensorboard/${project}/${experiment}/${owner}/${model}
