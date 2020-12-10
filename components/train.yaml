@@ -34,6 +34,8 @@ implementation:
 
       chmod +x ./sync-repo.sh
       ./sync-repo.sh
+      
+      cd epic-kitchen-lstm
 
       PYTHONPATH=./ python3 tools/run_net.py \
         --cfg configs/EPIC-KITCHENS/SLOWFAST_LSTM_8x8_R50.yaml \
