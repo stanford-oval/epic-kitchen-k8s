@@ -12,7 +12,7 @@ outputs:
   - {name: s3_model_dir}
 implementation:
   container:
-    image: '932360549041.dkr.ecr.us-west-2.amazonaws.com/genie-toolkit-jupyter:epic-kitchen-train.20201209.04'
+    image: '932360549041.dkr.ecr.us-west-2.amazonaws.com/genie-toolkit-jupyter:epic-kitchen-train.20201209.05'
     command:
     - /bin/bash
     - -e

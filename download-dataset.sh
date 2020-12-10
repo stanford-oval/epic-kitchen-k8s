@@ -8,6 +8,7 @@ fi
 
 if [ ! -d "/data/epic-kitchen-all" ]
 then
+	mkdir -p /data/epic-kitchen-all
 	pushd /data/epic-kitchen-all
 	aws s3 cp --recursive s3://geniehai/jackiey/dataset/ ./
 	for a in *.tar
