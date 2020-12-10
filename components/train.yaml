@@ -24,12 +24,15 @@ implementation:
       shift $n
       set -x
 
+      chmod +x ./download-dataset.sh
       ./download-dataset.sh
 
+      chmod +x ./download-dataset.sh
       ./download-pretrained.sh
 
       export MODEL_VERSION=${git_rev}
 
+      chmod +x ./download-dataset.sh
       ./sync-repo.sh
 
       PYTHONPATH=./ python3 tools/run_net.py \
