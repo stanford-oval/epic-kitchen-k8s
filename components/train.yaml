@@ -23,6 +23,8 @@ implementation:
       parse_args "$0" "owner project experiment model git_rev s3_model_dir" "$@"
       shift $n
       set -x
+      
+      apt-get install ffmpeg libsm6 libxext6  -y
 
       chmod +x ./download-dataset.sh
       ./download-dataset.sh
