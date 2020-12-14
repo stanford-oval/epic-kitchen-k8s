@@ -51,8 +51,6 @@ implementation:
       PYTHONPATH=./ python3 tools/run_net.py \
         --cfg configs/EPIC-KITCHENS/SLOWFAST_LSTM_8x8_R50.yaml \
         NUM_GPUS 1 \
-        SOLVER.BASE_LR 0.001 \
-        SOLVER.MAX_EPOCH 3 \
         OUTPUT_DIR ./save \
         EPICKITCHENS.VISUAL_DATA_DIR /data/epic-kitchen-all \
         EPICKITCHENS.ANNOTATIONS_DIR /data/epic-kitchens-100-annotations \
