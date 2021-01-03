@@ -6,6 +6,7 @@ inputs:
   - {name: project, description: ''}
   - {name: experiment, description: ''}
   - {name: model, description: ''}
+  - {name: pretrained_s3, description: ''}
   - {name: git_rev, description: ''}
   - {name: additional_args, description: ''}
 outputs:
@@ -20,9 +21,11 @@ implementation:
     - |
       . ./lib.sh
 
-      parse_args "$0" "owner project experiment model git_rev s3_model_dir" "$@"
+      parse_args "$0" "owner project experiment model pretrained_s3 git_rev s3_model_dir" "$@"
       shift $n
       set -x
+
+      echo "TESTING PRETRAINED MODEL"
       
       apt-get update
       apt-get install ffmpeg libsm6 libxext6  -y
@@ -48,13 +51,31 @@ implementation:
       
       find /data/epic-kitchens-100-annotations
 
-      PYTHONPATH=./ python3 tools/run_net.py \
-        --cfg configs/EPIC-KITCHENS/SLOWFAST_LSTM_8x8_R50.yaml \
-        NUM_GPUS 1 \
-        OUTPUT_DIR ./save \
-        EPICKITCHENS.VISUAL_DATA_DIR /data/epic-kitchen-all \
-        EPICKITCHENS.ANNOTATIONS_DIR /data/epic-kitchens-100-annotations \
-        EPICKITCHENS.TB_DIR /shared/tensorboard/${project}/${experiment}/${owner}/${model}
+      if [ -n "${s3_model_dir}" ]; then
+        mkdir -p test
+
+        aws s3 cp ${s3_model_dir} ./test/checkpoint_best.pyth
+
+        PYTHONPATH=./ python3 tools/run_net.py \
+          --cfg configs/EPIC-KITCHENS/SLOWFAST_LSTM_8x8_R50.yaml \
+          NUM_GPUS 1 \
+          OUTPUT_DIR ./save \
+          EPICKITCHENS.VISUAL_DATA_DIR /data/epic-kitchen-all \
+          EPICKITCHENS.ANNOTATIONS_DIR /data/epic-kitchens-100-annotations \
+          EPICKITCHENS.TB_DIR /shared/tensorboard/${project}/${experiment}/${owner}/${model} \
+          TRAIN.ENABLE False \
+          TEST.ENABLE True \
+          TEST.CHECKPOINT_FILE_PATH ./test/checkpoint_best.pyth
+      else
+        PYTHONPATH=./ python3 tools/run_net.py \
+          --cfg configs/EPIC-KITCHENS/SLOWFAST_LSTM_8x8_R50.yaml \
+          NUM_GPUS 1 \
+          OUTPUT_DIR ./save \
+          EPICKITCHENS.VISUAL_DATA_DIR /data/epic-kitchen-all \
+          EPICKITCHENS.ANNOTATIONS_DIR /data/epic-kitchens-100-annotations \
+          EPICKITCHENS.TB_DIR /shared/tensorboard/${project}/${experiment}/${owner}/${model}
+      fi
+
 
       S3_MODEL_DIR=s3://geniehai/${owner}/models/${project}/${experiment}/${model}/`date +%s`/
       aws s3 sync --no-progress save/ ${S3_MODEL_DIR}
@@ -68,6 +89,7 @@ implementation:
       --project, {inputValue: project},
       --experiment, {inputValue: experiment},
       --model, {inputValue: model},
+      --pretrained_s3, {inputValue: pretrained_s3},
       --git_rev, {inputValue: git_rev},
       --s3_model_dir, {outputPath: s3_model_dir},
       --,
