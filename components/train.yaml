@@ -51,10 +51,10 @@ implementation:
       
       find /data/epic-kitchens-100-annotations
 
-      if [ -n "${s3_model_dir}" ]; then
+      if [ -n "${pretrained_s3}" ]; then
         mkdir -p test
 
-        aws s3 cp ${s3_model_dir} ./test/checkpoint_best.pyth
+        aws s3 cp ${pretrained_s3} ./test/checkpoint_best.pyth
 
         PYTHONPATH=./ python3 tools/run_net.py \
           --cfg configs/EPIC-KITCHENS/SLOWFAST_LSTM_8x8_R50.yaml \
