@@ -22,7 +22,7 @@ implementation:
     - |
       . ./lib.sh
 
-      parse_args "$0" "owner project experiment model pretrained_s3 git_rev s3_model_dir" "$@"
+      parse_args "$0" "owner project experiment model pretrained_s3 git_rev s3_model_dir mode" "$@"
       shift $n
       set -x
 
