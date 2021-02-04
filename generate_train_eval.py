@@ -37,6 +37,7 @@ def train_eval_epic(
     model,
     git_rev,
     pretrained_s3,
+    mode,
     train_additional_args='',
     eval_additional_args=''
 ):
@@ -50,6 +51,7 @@ def train_eval_epic(
             model=model,
             git_rev=git_rev,
             pretrained_s3=pretrained_s3,
+            mode=mode,
             additional_args=train_additional_args)
     (train_op.container
         .set_memory_request('56Gi')

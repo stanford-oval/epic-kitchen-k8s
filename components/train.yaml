@@ -7,6 +7,7 @@ inputs:
   - {name: experiment, description: ''}
   - {name: model, description: ''}
   - {name: pretrained_s3, description: ''}
+  - {name: mode, description: ''}
   - {name: git_rev, description: ''}
   - {name: additional_args, description: ''}
 outputs:
@@ -50,12 +51,26 @@ implementation:
       # git clone https://github.com/epic-kitchens/epic-kitchens-100-annotations.git /data/epic-kitchens-100-annotations
       
       find /data/epic-kitchens-100-annotations
+        
+      fi
 
-      if [ -n "${pretrained_s3}" ]; then
-        mkdir -p test
-
-        aws s3 cp ${pretrained_s3} ./test/checkpoint_best.pyth
-
+      if ["$mode" == "train"]; then
+        if [ -n "${pretrained_s3}" ]; then
+          mkdir -p output/checkpoints
+          aws s3 cp --recursive "${pretrained_s3}" ./output/checkpoints/
+        else
+        PYTHONPATH=./ python3 tools/run_net.py \
+          --cfg configs/EPIC-KITCHENS/SLOWFAST_LSTM_8x8_R50.yaml \
+          NUM_GPUS 1 \
+          OUTPUT_DIR ./save \
+          EPICKITCHENS.VISUAL_DATA_DIR /data/epic-kitchen-all \
+          EPICKITCHENS.ANNOTATIONS_DIR /data/epic-kitchens-100-annotations \
+          EPICKITCHENS.TB_DIR /shared/tensorboard/${project}/${experiment}/${owner}/${model}
+      else
+        if [ -n "${pretrained_s3}" ]; then
+          mkdir -p test
+          aws s3 cp "${pretrained_s3}/checkpoint_best.pyth" ./test/checkpoint_best.pyth
+        else
         PYTHONPATH=./ python3 tools/run_net.py \
           --cfg configs/EPIC-KITCHENS/SLOWFAST_LSTM_8x8_R50.yaml \
           NUM_GPUS 1 \
@@ -66,14 +81,6 @@ implementation:
           TRAIN.ENABLE False \
           TEST.ENABLE True \
           TEST.CHECKPOINT_FILE_PATH ./test/checkpoint_best.pyth
-      else
-        PYTHONPATH=./ python3 tools/run_net.py \
-          --cfg configs/EPIC-KITCHENS/SLOWFAST_LSTM_8x8_R50.yaml \
-          NUM_GPUS 1 \
-          OUTPUT_DIR ./save \
-          EPICKITCHENS.VISUAL_DATA_DIR /data/epic-kitchen-all \
-          EPICKITCHENS.ANNOTATIONS_DIR /data/epic-kitchens-100-annotations \
-          EPICKITCHENS.TB_DIR /shared/tensorboard/${project}/${experiment}/${owner}/${model}
       fi
 
 
@@ -90,6 +97,7 @@ implementation:
       --experiment, {inputValue: experiment},
       --model, {inputValue: model},
       --pretrained_s3, {inputValue: pretrained_s3},
+      --mode, {inputValue: mode},
       --git_rev, {inputValue: git_rev},
       --s3_model_dir, {outputPath: s3_model_dir},
       --,
