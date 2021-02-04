@@ -54,8 +54,8 @@ implementation:
 
       if [ "$mode" == "train" ]; then
         if [ -n "${pretrained_s3}" ]; then
-          mkdir -p output/checkpoints
-          aws s3 cp --recursive "${pretrained_s3}" ./output/checkpoints/
+          mkdir -p save/checkpoints
+          aws s3 cp --recursive "${pretrained_s3}" ./save/checkpoints/
         fi
         PYTHONPATH=./ python3 tools/run_net.py \
           --cfg configs/EPIC-KITCHENS/SLOWFAST_LSTM_8x8_R50.yaml \
