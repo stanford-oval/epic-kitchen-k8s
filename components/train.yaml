@@ -58,7 +58,7 @@ implementation:
         if [ -n "${pretrained_s3}" ]; then
           mkdir -p output/checkpoints
           aws s3 cp --recursive "${pretrained_s3}" ./output/checkpoints/
-        else
+        fi
         PYTHONPATH=./ python3 tools/run_net.py \
           --cfg configs/EPIC-KITCHENS/SLOWFAST_LSTM_8x8_R50.yaml \
           NUM_GPUS 1 \
@@ -70,7 +70,7 @@ implementation:
         if [ -n "${pretrained_s3}" ]; then
           mkdir -p test
           aws s3 cp "${pretrained_s3}/checkpoint_best.pyth" ./test/checkpoint_best.pyth
-        else
+        fi
         PYTHONPATH=./ python3 tools/run_net.py \
           --cfg configs/EPIC-KITCHENS/SLOWFAST_LSTM_8x8_R50.yaml \
           NUM_GPUS 1 \
