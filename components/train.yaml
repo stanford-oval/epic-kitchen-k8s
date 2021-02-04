@@ -51,8 +51,6 @@ implementation:
       # git clone https://github.com/epic-kitchens/epic-kitchens-100-annotations.git /data/epic-kitchens-100-annotations
       
       find /data/epic-kitchens-100-annotations
-        
-      fi
 
       if ["$mode" == "train"]; then
         if [ -n "${pretrained_s3}" ]; then
